@@ -1,13 +1,15 @@
 "use client";
 
 import React, { useState } from "react";
-import { Mail, Lock, Eye, EyeOff, Loader2, KeyRound, UserCheck, HelpCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { toast, Toaster } from "sonner";
+import { Mail, Lock, Eye, EyeOff, Loader2, KeyRound, UserCheck, HelpCircle, CheckCircle, AlertCircle } from "lucide-react";
 import ThemeToggle from "./theme-toggle";
 
 export default function LoginForm() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("encoder");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -15,36 +17,125 @@ export default function LoginForm() {
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const [loginSuccess, setLoginSuccess] = useState(false);
 
+  // Test validation - guaranteed access with specific credentials
+  const TEST_CREDENTIALS = {
+    email: "admin@sams.edu.ph",
+    password: "admin123",
+    username: "admin"
+  };
+
   const validate = () => {
     const activeErrors: { email?: string; password?: string } = {};
+    
+    // Test validation with guaranteed access for specific credentials
+    const normalizedEmail = email.toLowerCase().trim();
+    const isTestEmail = normalizedEmail === TEST_CREDENTIALS.email || normalizedEmail === TEST_CREDENTIALS.username;
+    const isTestPassword = password === TEST_CREDENTIALS.password;
+    
     if (!email) {
       activeErrors.email = "Username or Email is required";
+      toast.error("Email is required", {
+        icon: <AlertCircle className="w-4 h-4" />,
+        description: "Please enter your username or email address"
+      });
     } else if (email.includes("@") && !/\S+@\S+\.\S+/.test(email)) {
       activeErrors.email = "Please enter a valid email address";
+      toast.error("Invalid email format", {
+        icon: <AlertCircle className="w-4 h-4" />,
+        description: "Please check your email address format"
+      });
     }
+    
     if (!password) {
       activeErrors.password = "Password is required";
+      toast.error("Password is required", {
+        icon: <AlertCircle className="w-4 h-4" />,
+        description: "Please enter your password"
+      });
     } else if (password.length < 4) {
       activeErrors.password = "Password must be at least 4 characters";
+      toast.error("Password too short", {
+        icon: <AlertCircle className="w-4 h-4" />,
+        description: "Password must be at least 4 characters"
+      });
     }
+    
+    // Special validation for test credentials
+    if (isTestEmail && isTestPassword) {
+      // Clear any errors for test credentials
+      setErrors({});
+      return true;
+    }
+    
     setErrors(activeErrors);
     return Object.keys(activeErrors).length === 0;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Test validation with guaranteed access
+    const normalizedEmail = email.toLowerCase().trim();
+    const isTestEmail = normalizedEmail === TEST_CREDENTIALS.email || normalizedEmail === TEST_CREDENTIALS.username;
+    const isTestPassword = password === TEST_CREDENTIALS.password;
+    
+    // Special case: test credentials always work
+    if (isTestEmail && isTestPassword) {
+      setLoading(true);
+      toast.success("Test credentials detected!", {
+        icon: <CheckCircle className="w-4 h-4" />,
+        description: "Using guaranteed access test account"
+      });
+      
+      // Simulate API authorization request
+      setTimeout(() => {
+        setLoading(false);
+        setLoginSuccess(true);
+        toast.success("Access Granted!", {
+          icon: <CheckCircle className="w-4 h-4 text-green-500" />,
+          description: "Welcome to SAMS Admin System",
+          duration: 3000
+        });
+        
+        // Redirect to dashboard after success
+        setTimeout(() => {
+          router.push("/dashboard");
+        }, 2000);
+      }, 1500);
+      return;
+    }
+    
+    // Regular validation for other credentials
     if (!validate()) return;
 
     setLoading(true);
+    toast.loading("Verifying credentials...", {
+      description: "Please wait while we authenticate your account"
+    });
+    
     // Simulate API authorization request
     setTimeout(() => {
       setLoading(false);
-      setLoginSuccess(true);
+      toast.dismiss();
+      toast.error("Authentication Failed", {
+        icon: <AlertCircle className="w-4 h-4" />,
+        description: "Invalid credentials. Try test credentials: admin@sams.edu.ph / admin123",
+        duration: 5000
+      });
     }, 1500);
   };
 
   return (
-    <div className="relative flex flex-col justify-between w-full lg:w-1/2 min-h-screen p-8 sm:p-12 md:p-20 bg-background text-foreground transition-colors duration-300">
+    <>
+      <Toaster 
+        position="top-right"
+        expand={false}
+        richColors
+        theme="system"
+        closeButton
+      />
+      
+      <div className="relative flex flex-col justify-between w-full lg:w-1/2 min-h-screen p-8 sm:p-12 md:p-20 bg-background text-foreground transition-colors duration-300">
 
       {/* Top Controls: Logo and Theme Toggle */}
       <div className="flex items-center justify-between w-full">
@@ -65,6 +156,15 @@ export default function LoginForm() {
           <p className="text-muted-foreground text-sm">
             Enter your credentials to manage records, sections, and inventory.
           </p>
+          <div className="mt-2 p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+            <p className="text-xs text-blue-700 dark:text-blue-300 font-medium">
+              💡 <strong>Test Validation:</strong> Use{" "}
+              <code className="bg-blue-100 dark:bg-blue-900/40 px-1.5 py-0.5 rounded">admin@sams.edu.ph</code> or{" "}
+              <code className="bg-blue-100 dark:bg-blue-900/40 px-1.5 py-0.5 rounded">admin</code> 
+              {" "}with password{" "}
+              <code className="bg-blue-100 dark:bg-blue-900/40 px-1.5 py-0.5 rounded">admin123</code> for guaranteed access.
+            </p>
+          </div>
         </div>
 
         {loginSuccess ? (
@@ -74,7 +174,7 @@ export default function LoginForm() {
             </div>
             <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Access Granted</h3>
             <p className="text-sm text-slate-600 dark:text-slate-400">
-              Welcome back! Redirecting you to the <strong>{role}</strong> dashboard...
+              Welcome back! Redirecting you to the dashboard...
             </p>
           </div>
         ) : (
@@ -192,5 +292,7 @@ export default function LoginForm() {
         </div>
       </div>
     </div>
+    </>
   );
 }
+
