@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Login | SAMS School Admin & Management System",
-  description: "Secure administration and records encoder login for St. Augustine Academy School Admin Management System (SAMS).",
+  description: "Secure administration and records manager Panghayaan Elementary School Admin Management System (SAMS).",
 };
 
 export default function Home() {
