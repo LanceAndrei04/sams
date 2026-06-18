@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { toast } from "sonner";
@@ -16,7 +16,7 @@ import {
   Section,
   StudentWithRelations,
   getSectionsByGrade,
-  checkLrnExists,
+  checkLRNUnique,
   createStudent,
   updateStudent,
 } from "@/lib/supabase/students";
@@ -39,7 +39,7 @@ const studentSchema = z.object({
   mother_name: z.string().optional().or(z.literal("")),
   guardian_name: z.string().optional().or(z.literal("")),
   contact_number: z.string().optional().or(z.literal("")),
-  status: z.enum(["Active", "Inactive", "Transferred"]),
+  status: z.enum(["active", "inactive", "transferred"]),
   remarks: z.string().optional().or(z.literal("")),
 });
 
@@ -47,7 +47,7 @@ type FormValues = z.infer<typeof studentSchema>;
 
 interface StudentFormProps {
   mode: "add" | "edit";
-  studentId?: number;
+  studentId?: string;
   grades: Grade[];
   initialStudent?: StudentWithRelations | null;
 }
@@ -75,8 +75,8 @@ export default function StudentForm({
   } = useForm<FormValues>({
     resolver: zodResolver(studentSchema),
     defaultValues: {
-      gradeId: initialStudent ? initialStudent.section.grade.id.toString() : "",
-      sectionId: initialStudent ? initialStudent.section_id.toString() : "",
+      gradeId: initialStudent ? initialStudent.grade.id : "",
+      sectionId: initialStudent ? initialStudent.section_id : "",
       lrn: initialStudent ? initialStudent.lrn : "",
       last_name: initialStudent ? initialStudent.last_name : "",
       first_name: initialStudent ? initialStudent.first_name : "",
@@ -88,7 +88,7 @@ export default function StudentForm({
       mother_name: initialStudent?.mother_name || "",
       guardian_name: initialStudent?.guardian_name || "",
       contact_number: initialStudent?.contact_number || "",
-      status: initialStudent ? initialStudent.status : "Active",
+      status: initialStudent ? initialStudent.status : "active",
       remarks: initialStudent?.remarks || "",
     },
   });
@@ -115,17 +115,17 @@ export default function StudentForm({
     const loadSections = async () => {
       try {
         setLoadingSections(true);
-        const res = await getSectionsByGrade(Number(selectedGradeId));
+        const res = await getSectionsByGrade(selectedGradeId);
         if (active) {
           setSections(res);
           // If editing and grade matches original, make sure original section is selected.
           // Otherwise, clear the selection.
-          if (initialStudent && initialStudent.section.grade.id.toString() === selectedGradeId) {
-            setValue("sectionId", initialStudent.section_id.toString());
+          if (initialStudent && initialStudent.grade.id === selectedGradeId) {
+            setValue("sectionId", initialStudent.section_id);
           } else {
             // Only clear if grade actually changed from default
             const currentSection = watch("sectionId");
-            if (!res.some((s) => s.id.toString() === currentSection)) {
+            if (!res.some((s) => s.id === currentSection)) {
               setValue("sectionId", "");
             }
           }
@@ -170,12 +170,12 @@ export default function StudentForm({
   };
 
   // Submit Handler
-  const onSubmit = async (data: FormValues) => {
+  const onSubmit: SubmitHandler<FormValues> = async (data) => {
     try {
       setSubmitting(true);
 
       // 1. Uniqueness LRN check (server operation)
-      const lrnExists = await checkLrnExists(data.lrn, mode === "edit" ? studentId : undefined);
+      const lrnExists = await checkLRNUnique(data.lrn, mode === "edit" ? studentId : undefined);
       if (lrnExists) {
         setError("lrn", {
           type: "manual",
@@ -203,16 +203,18 @@ export default function StudentForm({
         contact_number: data.contact_number || undefined,
         status: data.status,
         remarks: data.remarks || undefined,
-        section_id: Number(data.sectionId),
+        section_id: data.sectionId,
       };
 
-      let result: StudentWithRelations;
+      let result = null;
       if (mode === "add") {
         result = await createStudent(payload);
+        if (!result) throw new Error("Unable to create student.");
         toast.success("Student added successfully");
       } else {
         if (!studentId) throw new Error("Missing Student ID");
         result = await updateStudent(studentId, payload);
+        if (!result) throw new Error("Unable to update student.");
         toast.success("Student updated successfully");
       }
 
@@ -541,9 +543,9 @@ export default function StudentForm({
                         errors.status ? "border-red-500 ring-4 ring-red-500/10" : "border-border"
                       }`}
                     >
-                      <option value="Active">Active</option>
-                      <option value="Inactive">Inactive</option>
-                      <option value="Transferred">Transferred</option>
+                        <option value="active">Active</option>
+                      <option value="inactive">Inactive</option>
+                      <option value="transferred">Transferred</option>
                     </select>
                   </div>
 
@@ -557,7 +559,7 @@ export default function StudentForm({
                       rows={1}
                       placeholder="Notes regarding student status or history"
                       {...register("remarks")}
-                      className="w-full min-h-[44px] max-h-[120px] p-3 rounded-xl border border-border bg-card text-foreground text-sm focus:ring-4 focus:ring-primary/20"
+                      className="w-full min-h-11 max-h-30 p-3 rounded-xl border border-border bg-card text-foreground text-sm focus:ring-4 focus:ring-primary/20"
                     />
                   </div>
                 </div>
@@ -569,7 +571,7 @@ export default function StudentForm({
               <Button variant="outline" type="button" onClick={handleCancel} disabled={submitting}>
                 Cancel
               </Button>
-              <Button variant="primary" type="submit" disabled={submitting} className="flex items-center gap-2">
+              <Button variant="default" type="submit" disabled={submitting} className="flex items-center gap-2">
                 {submitting ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />

@@ -39,9 +39,6 @@ export default function GradeCard({ gradeName, studentCount, gradeId }: GradeCar
             {studentCount === 1 ? "student" : "students"}
           </p>
           
-          <div className="mt-4 text-xs text-muted-foreground">
-            Click to view roster
-          </div>
         </div>
       </Card>
     </Link>
