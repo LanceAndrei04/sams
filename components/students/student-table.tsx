@@ -8,9 +8,11 @@ import {
   getPaginationRowModel,
   flexRender,
   SortingState,
+  ColumnDef,
 } from "@tanstack/react-table";
+import { useRouter } from "next/navigation";
 import { StudentWithRelations } from "@/lib/supabase/students";
-import { columns } from "./columns";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -29,7 +31,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { ChevronLeft, ChevronRight, Search, Eye, Pencil } from "lucide-react";
 
 interface StudentTableProps {
   students: StudentWithRelations[];
@@ -37,23 +39,106 @@ interface StudentTableProps {
   isLoading?: boolean;
 }
 
+// Define columns inline to ensure they're always available
+const getTableColumns = (router: ReturnType<typeof useRouter>): ColumnDef<StudentWithRelations>[] => [
+  {
+    accessorKey: "last_name",
+    header: "Name",
+    cell: (info) => {
+      const row = info.row.original;
+      const middleInitial = row.middle_name ? ` ${row.middle_name.charAt(0)}.` : "";
+      return (
+        <span className="font-semibold text-foreground">
+          {row.last_name}, {row.first_name}{middleInitial}
+        </span>
+      );
+    },
+  },
+  {
+    accessorKey: "lrn",
+    header: "LRN",
+    cell: (info) => (
+      <code className="font-mono text-sm tracking-wide bg-muted/50 px-1.5 py-0.5 rounded">
+        {info.getValue() as string}
+      </code>
+    ),
+  },
+  {
+    id: "grade",
+    header: "Grade",
+    accessorFn: (row) => row.grade?.name || "N/A",
+  },
+  {
+    id: "section",
+    header: "Section",
+    accessorFn: (row) => row.section?.name || "N/A",
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: (info) => {
+      const status = String(info.getValue()).toLowerCase() as StudentWithRelations['status'];
+      const variantMap = {
+        active: "active" as const,
+        inactive: "inactive" as const,
+        transferred: "transferred" as const,
+      };
+      return (
+        <Badge variant={variantMap[status]}>
+          {status.charAt(0).toUpperCase() + status.slice(1)}
+        </Badge>
+      );
+    },
+  },
+  {
+    accessorKey: "contact_number",
+    header: "Contact",
+    cell: (info) => info.getValue() || "—",
+  },
+  {
+    id: "actions",
+    header: "Actions",
+    cell: (info) => {
+      const student = info.row.original;
+      return (
+        <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+          <Button
+            variant="ghost"
+            size="sm"
+            aria-label={`View profile of ${student.first_name}`}
+            onClick={() => router.push(`/students/${student.id}`)}
+          >
+            <Eye className="w-4 h-4 text-muted-foreground hover:text-foreground" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            aria-label={`Edit details of ${student.first_name}`}
+            onClick={() => router.push(`/students/${student.id}/edit`)}
+          >
+            <Pencil className="w-4 h-4 text-muted-foreground hover:text-foreground" />
+          </Button>
+        </div>
+      );
+    },
+  },
+];
+
 export default function StudentTable({
   students,
   sections,
   isLoading = false,
 }: StudentTableProps) {
+  const router = useRouter();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [sectionFilter, setSectionFilter] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState<string>("");
 
-  // Filter and search students
   const filteredStudents = students.filter((student) => {
-    // Filter by section
     if (sectionFilter !== "all" && student.section_id !== sectionFilter) {
       return false;
     }
 
-    // Search by name or LRN
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
       const fullName = `${student.first_name} ${student.last_name} ${student.middle_name || ""}`.toLowerCase();
@@ -65,9 +150,10 @@ export default function StudentTable({
     return true;
   });
 
+  const tableColumns = getTableColumns(router);
   const table = useReactTable({
     data: filteredStudents,
-    columns,
+    columns: tableColumns,
     state: {
       sorting,
     },
@@ -93,30 +179,28 @@ export default function StudentTable({
             <Skeleton className="h-10 w-full" />
           </div>
         </div>
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <TableHead key={i}>
-                    <Skeleton className="h-6 w-24" />
-                  </TableHead>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              {Array.from({ length: 7 }).map((_, i) => (
+                <TableHead key={i}>
+                  <Skeleton className="h-6 w-24" />
+                </TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {Array.from({ length: 5 }).map((_, i) => (
+              <TableRow key={i}>
+                {Array.from({ length: 7 }).map((_, j) => (
+                  <TableCell key={j}>
+                    <Skeleton className="h-4 w-full" />
+                  </TableCell>
                 ))}
               </TableRow>
-            </TableHeader>
-            <TableBody>
-              {Array.from({ length: 5 }).map((_, i) => (
-                <TableRow key={i}>
-                  {Array.from({ length: 6 }).map((_, j) => (
-                    <TableCell key={j}>
-                      <Skeleton className="h-4 w-full" />
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+            ))}
+          </TableBody>
+        </Table>
       </div>
     );
   }
@@ -174,35 +258,31 @@ export default function StudentTable({
       </div>
 
       {/* Table */}
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
+      <Table>
+        <TableHeader>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <TableHead key={header.id}>
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                </TableHead>
+              ))}
+            </TableRow>
+          ))}
+        </TableHeader>
+        <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className="cursor-pointer hover:bg-muted/50"
+                  className="cursor-pointer hover:bg-white/80"
                   onClick={() => {
-                    // Navigate to student profile
                     window.location.href = `/students/${row.original.id}`;
                   }}
                 >
@@ -219,7 +299,7 @@ export default function StudentTable({
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
+                  colSpan={tableColumns.length}
                   className="h-24 text-center"
                 >
                   {filteredStudents.length === 0 && students.length > 0 ? (
@@ -242,7 +322,6 @@ export default function StudentTable({
             )}
           </TableBody>
         </Table>
-      </div>
 
       {/* Pagination */}
       {table.getPageCount() > 1 && (

@@ -1,46 +1,53 @@
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { GraduationCap } from "lucide-react";
 
 interface GradeCardProps {
   gradeName: string;
   studentCount: number;
-  gradeId?: string; // In a real implementation, this would be the database ID
+  gradeId?: string;
 }
 
 export default function GradeCard({ gradeName, studentCount, gradeId }: GradeCardProps) {
-  // Convert grade name to URL-friendly format
-  // "Grade 3" -> "grade-3", "Kinder" -> "kinder"
   const gradeSlug = gradeName.toLowerCase().replace(" ", "-");
   const href = `/students/grade/${gradeSlug}`;
   
+  // Determine color based on grade level
+  const getGradeColor = (name: string) => {
+    const lower = name.toLowerCase();
+    if (lower.includes("kinder")) return "from-red-400 to-red-500";
+    if (lower.includes("grade 1") || lower.includes("grade 2") || lower.includes("grade 3")) return "from-green-400 to-green-500";
+    if (lower.includes("grade 4") || lower.includes("grade 5") || lower.includes("grade 6")) return "from-blue-400 to-blue-500";
+    return "from-purple-400 to-purple-500";
+  };
+  
+  const colorGradient = getGradeColor(gradeName);
+  
   return (
     <Link href={href} className="block">
-      <Card className={cn(
-        "p-6 hover:border-primary transition-all duration-200",
-        "hover:shadow-lg cursor-pointer",
-        "focus:outline-none focus:ring-4 focus:ring-primary/20"
+      <div className={cn(
+        "rounded-[16px] p-6 min-h-[140px] cursor-pointer",
+        "bg-gradient-to-br",
+        colorGradient,
+        "text-white shadow-[0_20px_50px_-35px_rgba(15,23,42,0.35)]",
+        "hover:shadow-[0_25px_60px_-30px_rgba(15,23,42,0.45)] transition-all duration-200",
+        "hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-white/30"
       )}>
-        <div className="flex flex-col items-center text-center">
-          <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-            <GraduationCap className="w-8 h-8 text-primary" />
-          </div>
-          
-          <h3 className="text-xl font-semibold text-foreground mb-2">
+        <div className="flex flex-col justify-between h-full">
+          <h3 className="text-lg font-bold">
             {gradeName}
           </h3>
           
-          <div className="text-3xl font-bold text-primary mb-1">
-            {studentCount}
+          <div className="flex items-baseline gap-2">
+            <div className="text-3xl font-bold">
+              {studentCount}
+            </div>
+            <p className="text-sm opacity-90">
+              {studentCount === 1 ? "student" : "students"}
+            </p>
           </div>
-          
-          <p className="text-sm text-muted-foreground">
-            {studentCount === 1 ? "student" : "students"}
-          </p>
-          
         </div>
-      </Card>
+      </div>
     </Link>
   );
 }

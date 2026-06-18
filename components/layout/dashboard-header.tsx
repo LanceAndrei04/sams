@@ -49,9 +49,6 @@ export default function DashboardHeader() {
 
       {/* Right side: Actions and user menu */}
       <div className="flex items-center gap-4">
-        {/* Theme Toggle */}
-        <ThemeToggle />
-        
         {/* Notifications */}
         <button
           className="p-2 hover:bg-muted rounded-lg transition-colors relative"
@@ -69,7 +66,7 @@ export default function DashboardHeader() {
           <HelpCircle className="w-5 h-5 text-muted-foreground" />
         </button>
         
-        {/* User Profile */}
+        {/* User Profile + Theme Toggle */}
         <div className="flex items-center gap-3 pl-4 border-l border-border">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
@@ -86,6 +83,11 @@ export default function DashboardHeader() {
           >
             <ChevronDown className="w-4 h-4 text-muted-foreground" />
           </button>
+          
+          {/* Theme Toggle */}
+          <div className="ml-2 pl-2 border-l border-border">
+            <ThemeToggle />
+          </div>
         </div>
       </div>
     </header>

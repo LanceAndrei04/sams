@@ -161,7 +161,7 @@ export async function getStudentCountsByGrade(): Promise<Record<string, number>>
 // Get students by grade ID
 export async function getStudentsByGrade(gradeId: string): Promise<StudentWithRelations[]> {
   return mockStudents
-    .filter(student => student.section?.grade_id === gradeId)
+    .filter(student => student.grade?.id === gradeId)
     .sort((a, b) => a.last_name.localeCompare(b.last_name));
 }
 
