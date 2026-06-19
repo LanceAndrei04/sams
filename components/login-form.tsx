@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast, Toaster } from "sonner";
 import { Mail, Lock, Eye, EyeOff, Loader2, KeyRound, UserCheck, HelpCircle, CheckCircle, AlertCircle } from "lucide-react";
-import ThemeToggle from "./theme-toggle";
+
 
 export default function LoginForm() {
   const router = useRouter();
@@ -146,7 +146,6 @@ export default function LoginForm() {
           <span className="font-semibold text-sm tracking-tight">SAMS Admin Portal</span>
         </div>
         <div className="hidden lg:block" /> {/* Spacer */}
-        <ThemeToggle />
       </div>
 
       {/* Main Login Form Container */}

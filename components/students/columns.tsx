@@ -46,26 +46,22 @@ export const columns: ColumnDef<StudentWithRelations>[] = [
     cell: ({ row }) => {
       const status = row.getValue("status") as string;
       
-      let variant: "default" | "secondary" | "outline" = "default";
-      let textColor = "";
+      let variant: "active" | "inactive" | "transferred" = "active";
       
       switch (status) {
         case "active":
-          variant = "default";
-          textColor = "text-green-700 dark:text-green-300";
+          variant = "active";
           break;
         case "inactive":
-          variant = "secondary";
-          textColor = "text-gray-600 dark:text-gray-400";
+          variant = "inactive";
           break;
         case "transferred":
-          variant = "outline";
-          textColor = "text-amber-700 dark:text-amber-300";
+          variant = "transferred";
           break;
       }
       
       return (
-        <Badge variant={variant} className={textColor}>
+        <Badge variant={variant}>
           {status.charAt(0).toUpperCase() + status.slice(1)}
         </Badge>
       );

@@ -11,21 +11,17 @@ export function Badge({ className, variant = "default", ...props }: BadgeProps) 
       className={cn(
         "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold select-none border transition-colors",
         {
-          "bg-[linear-gradient(145deg,rgba(223,242,235,0.98),rgba(205,227,217,0.9))] text-emerald-800 border-emerald-200":
-            variant === "active",
-          "bg-[linear-gradient(145deg,rgba(223,242,235,0.98),rgba(205,227,217,0.9))] text-emerald-800 border-emerald-200":
-            variant === "own_station",
-          "bg-[linear-gradient(145deg,rgba(232,235,239,0.98),rgba(216,222,229,0.9))] text-slate-800 border-slate-200":
+          "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800":
+            variant === "active" || variant === "own_station",
+          "bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-900/50 dark:text-slate-300 dark:border-slate-700":
             variant === "inactive",
-          "bg-[linear-gradient(145deg,rgba(221,232,246,0.98),rgba(202,216,235,0.9))] text-blue-800 border-blue-200":
+          "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800":
             variant === "reassigned",
-          "bg-[linear-gradient(145deg,rgba(255,241,217,0.98),rgba(241,216,174,0.92))] text-amber-800 border-amber-200":
-            variant === "transferred",
-          "bg-[linear-gradient(145deg,rgba(255,241,217,0.98),rgba(241,216,174,0.92))] text-amber-800 border-amber-200":
-            variant === "borrowed",
-          "bg-[linear-gradient(145deg,rgba(233,226,245,0.98),rgba(219,208,235,0.92))] text-violet-800 border-violet-200":
+          "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800":
+            variant === "transferred" || variant === "borrowed",
+          "bg-violet-50 text-violet-700 border-violet-200 dark:bg-violet-950/40 dark:text-violet-300 dark:border-violet-800":
             variant === "clustered",
-          "bg-[linear-gradient(145deg,rgba(238,242,243,0.98),rgba(223,228,229,0.92))] text-primary border-white/80":
+          "bg-slate-100 text-slate-800 border-slate-200 dark:bg-slate-800/50 dark:text-slate-200 dark:border-slate-600":
             variant === "default",
         },
         className

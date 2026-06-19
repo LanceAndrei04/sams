@@ -93,14 +93,14 @@ export default function StudentProfilePage() {
   const fullName = `${student.first_name} ${student.middle_name ? student.middle_name + ' ' : ''}${student.last_name}`;
   const formattedBirthday = student.birthday ? format(new Date(student.birthday), "MMMM d, yyyy") : "N/A";
 
-  // Status badge color
-  let statusColor = "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300";
+  // Status badge variant
+  let statusVariant: "active" | "inactive" | "transferred" = "inactive";
   switch (student.status) {
     case "active":
-      statusColor = "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
+      statusVariant = "active";
       break;
     case "transferred":
-      statusColor = "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300";
+      statusVariant = "transferred";
       break;
   }
 
@@ -124,7 +124,7 @@ export default function StudentProfilePage() {
             <code className="font-mono text-sm bg-muted px-2 py-1 rounded">
               LRN: {student.lrn}
             </code>
-            <Badge className={statusColor}>
+            <Badge variant={statusVariant}>
               {student.status.charAt(0).toUpperCase() + student.status.slice(1)}
             </Badge>
           </div>
@@ -162,7 +162,7 @@ export default function StudentProfilePage() {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Status</p>
-                  <Badge className={statusColor}>
+                  <Badge variant={statusVariant}>
                     {student.status.charAt(0).toUpperCase() + student.status.slice(1)}
                   </Badge>
                 </div>
@@ -178,7 +178,7 @@ export default function StudentProfilePage() {
               <div className="space-y-4">
                 <div>
                   <p className="text-sm text-muted-foreground">Grade</p>
-                  <p className="font-medium">{student.section?.grade?.name || "N/A"}</p>
+                  <p className="font-medium">{student.grade?.name || "N/A"}</p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Section</p>

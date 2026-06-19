@@ -2,8 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { mainNavItems, currentSchoolYear, headerNavItems } from "@/lib/navigation";
-import ThemeToggle from "@/components/theme-toggle";
-import { Bell, HelpCircle, UserCircle, ChevronDown } from "lucide-react";
+import { HelpCircle, UserCircle, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function DashboardHeader() {
@@ -49,15 +48,6 @@ export default function DashboardHeader() {
 
       {/* Right side: Actions and user menu */}
       <div className="flex items-center gap-4">
-        {/* Notifications */}
-        <button
-          className="relative rounded-2xl bg-[linear-gradient(145deg,rgba(255,255,255,0.85),rgba(226,231,233,0.8))] p-2 shadow-[6px_6px_14px_rgba(163,173,175,0.18),-6px_-6px_14px_rgba(255,255,255,0.9)] transition-all hover:brightness-[0.98]"
-          aria-label={headerNavItems.notifications.label}
-        >
-          <Bell className="w-5 h-5 text-muted-foreground" />
-          <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full border-2 border-card" />
-        </button>
-        
         {/* Help */}
         <button
           className="rounded-2xl bg-[linear-gradient(145deg,rgba(255,255,255,0.85),rgba(226,231,233,0.8))] p-2 shadow-[6px_6px_14px_rgba(163,173,175,0.18),-6px_-6px_14px_rgba(255,255,255,0.9)] transition-all hover:brightness-[0.98]"
@@ -84,10 +74,7 @@ export default function DashboardHeader() {
             <ChevronDown className="w-4 h-4 text-muted-foreground" />
           </button>
           
-          {/* Theme Toggle */}
-          <div className="ml-2 border-l border-white/70 pl-2">
-            <ThemeToggle />
-          </div>
+
         </div>
       </div>
     </header>

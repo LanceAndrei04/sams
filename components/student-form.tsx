@@ -75,7 +75,7 @@ export default function StudentForm({
   } = useForm<FormValues>({
     resolver: zodResolver(studentSchema),
     defaultValues: {
-      gradeId: initialStudent ? initialStudent.grade.id : "",
+      gradeId: initialStudent ? (initialStudent.grade?.id ?? "") : "",
       sectionId: initialStudent ? initialStudent.section_id : "",
       lrn: initialStudent ? initialStudent.lrn : "",
       last_name: initialStudent ? initialStudent.last_name : "",
@@ -120,7 +120,7 @@ export default function StudentForm({
           setSections(res);
           // If editing and grade matches original, make sure original section is selected.
           // Otherwise, clear the selection.
-          if (initialStudent && initialStudent.grade.id === selectedGradeId) {
+          if (initialStudent && initialStudent.grade?.id === selectedGradeId) {
             setValue("sectionId", initialStudent.section_id);
           } else {
             // Only clear if grade actually changed from default

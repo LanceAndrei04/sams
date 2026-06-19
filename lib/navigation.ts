@@ -8,7 +8,6 @@ import {
   Package,
   Settings,
   UserCircle,
-  Bell,
   HelpCircle,
 } from "lucide-react";
 
@@ -53,10 +52,6 @@ export const mainNavItems: NavItem[] = [
 ];
 
 export const headerNavItems = {
-  notifications: {
-    icon: Bell,
-    label: "Notifications",
-  },
   help: {
     icon: HelpCircle,
     label: "Help",

@@ -129,7 +129,7 @@ export default function StudentTableContainer({
   const filteredStudents = React.useMemo(
     () =>
       students.filter((student) => {
-        if (selectedGrade && student.grade.id !== selectedGrade) {
+        if (selectedGrade && student.grade?.id !== selectedGrade) {
           return false;
         }
 
