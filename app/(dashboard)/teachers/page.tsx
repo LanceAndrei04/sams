@@ -5,7 +5,9 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import TeacherCardGrid from "@/components/teachers/teacher-card-grid";
+import TeacherTable, { TeacherTableSkeleton } from "@/components/teachers/teacher-table";
 import QuickSearch from "@/components/teachers/quick-search";
+import ViewToggle, { teachersViewPreferenceKey, TeachersView } from "@/components/teachers/view-toggle";
 import { getTeachers, searchTeachers, Teacher } from "@/lib/supabase/teachers";
 
 export default function TeachersPage() {
@@ -15,6 +17,17 @@ export default function TeachersPage() {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
+  const [view, setView] = useState<TeachersView>("cards");
+
+  useEffect(() => {
+    const storedView = sessionStorage.getItem(teachersViewPreferenceKey);
+    if (storedView === "cards" || storedView === "table") setView(storedView);
+  }, []);
+
+  const handleViewChange = (nextView: TeachersView) => {
+    setView(nextView);
+    sessionStorage.setItem(teachersViewPreferenceKey, nextView);
+  };
 
   // Debounce search query (300ms)
   useEffect(() => {
@@ -51,7 +64,6 @@ export default function TeachersPage() {
     setFilteredTeachers(filtered);
   }, [debouncedSearchQuery, teachers]);
 
-  // Render skeleton cards for loading state
   const SkeletonGrid = () => (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {Array.from({ length: 8 }).map((_, i) => (
@@ -94,8 +106,9 @@ export default function TeachersPage() {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-3xl font-bold">Teachers</h1>
+        <ViewToggle value={view} onValueChange={handleViewChange} />
       </div>
 
       {/* Search and Add Button Row */}
@@ -111,11 +124,13 @@ export default function TeachersPage() {
 
       {/* Content */}
       {loading ? (
-        <SkeletonGrid />
+        view === "cards" ? <SkeletonGrid /> : <TeacherTableSkeleton />
       ) : error ? (
         <ErrorState />
       ) : filteredTeachers.length === 0 ? (
         <EmptyState isSearchResult={searchQuery.length > 0} />
+      ) : view === "table" ? (
+        <TeacherTable teachers={filteredTeachers} />
       ) : (
         <TeacherCardGrid teachers={filteredTeachers} />
       )}

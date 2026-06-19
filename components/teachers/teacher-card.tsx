@@ -1,33 +1,16 @@
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Teacher } from "@/lib/supabase/teachers";
 import { cn } from "@/lib/utils";
+import { getTeacherInitials, TeacherItemStatusBadge } from "./teacher-display";
 
 interface TeacherCardProps {
   teacher: Teacher;
 }
 
 export default function TeacherCard({ teacher }: TeacherCardProps) {
-  // Get initials from first_name and last_name
-  const initials = `${teacher.first_name[0]}${teacher.last_name[0]}`.toUpperCase();
-
-  // Determine badge variant based on item_status
-  const getBadgeVariant = (status: string) => {
-    switch (status) {
-      case "Active":
-        return "active";
-      case "Inactive":
-        return "inactive";
-      case "On-Leave":
-        return "transferred";
-      case "Transferred":
-        return "transferred";
-      default:
-        return "default";
-    }
-  };
+  const initials = getTeacherInitials(teacher);
 
   return (
     <Link href={`/teachers/${teacher.id}`}>
@@ -59,9 +42,7 @@ export default function TeacherCard({ teacher }: TeacherCardProps) {
           </div>
 
           {/* Status Badge */}
-          <Badge variant={getBadgeVariant(teacher.item_status)}>
-            {teacher.item_status}
-          </Badge>
+          <TeacherItemStatusBadge status={teacher.item_status} />
         </CardContent>
       </Card>
     </Link>
