@@ -16,7 +16,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     
     const variantStyles = {
       default: "border border-white/75 bg-[linear-gradient(145deg,rgba(255,255,255,0.9),rgba(224,230,231,0.8))] text-foreground shadow-[6px_6px_14px_rgba(163,173,175,0.38),-6px_-6px_14px_rgba(255,255,255,0.8)] hover:shadow-[4px_4px_10px_rgba(163,173,175,0.34),-4px_-4px_10px_rgba(255,255,255,0.86)]",
-      primary: "bg-[linear-gradient(145deg,rgba(124,166,163,0.98),rgba(96,139,136,0.98))] text-white shadow-[10px_10px_18px_rgba(116,142,139,0.3),-8px_-8px_18px_rgba(255,255,255,0.42)] hover:brightness-[0.98]",
+      primary: "bg-[linear-gradient(145deg,rgba(127,181,176,0.98),rgba(101,155,149,0.98))] text-white shadow-[10px_10px_18px_rgba(116,142,139,0.3),-8px_-8px_18px_rgba(255,255,255,0.42)] hover:brightness-[0.98]",
       destructive: "bg-[linear-gradient(145deg,rgba(255,140,155,0.98),rgba(231,103,122,0.98))] text-white shadow-[10px_10px_18px_rgba(184,111,122,0.26),-8px_-8px_18px_rgba(255,255,255,0.4)]",
       outline: "border border-white/80 bg-[linear-gradient(145deg,rgba(246,248,248,0.9),rgba(227,233,234,0.8))] text-foreground shadow-[6px_6px_14px_rgba(163,173,175,0.26),-6px_-6px_14px_rgba(255,255,255,0.8)]",
       secondary: "bg-[linear-gradient(145deg,rgba(226,232,244,0.92),rgba(208,218,233,0.82))] text-[#36506b] shadow-[6px_6px_14px_rgba(163,173,175,0.2),-6px_-6px_14px_rgba(255,255,255,0.82)]",

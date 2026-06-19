@@ -25,6 +25,8 @@ interface DocumentDialogProps {
     document_name: string;
     document_date: string;
     direction: DocumentDirection;
+    received_by?: string | null;
+    released_by?: string | null;
     remarks?: string | null;
   }) => Promise<void>;
   document?: StudentDocument | null;
@@ -39,6 +41,8 @@ export default function DocumentDialog({
   const [documentName, setDocumentName] = useState("");
   const [documentDate, setDocumentDate] = useState("");
   const [direction, setDirection] = useState<DocumentDirection>("received");
+  const [receivedBy, setReceivedBy] = useState("");
+  const [releasedBy, setReleasedBy] = useState("");
   const [remarks, setRemarks] = useState("");
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<{
@@ -55,11 +59,15 @@ export default function DocumentDialog({
         setDocumentName(document.document_name);
         setDocumentDate(document.document_date);
         setDirection(document.direction);
+        setReceivedBy(document.received_by ?? "");
+        setReleasedBy(document.released_by ?? "");
         setRemarks(document.remarks ?? "");
       } else {
         setDocumentName("");
         setDocumentDate("");
         setDirection("received");
+        setReceivedBy("");
+        setReleasedBy("");
         setRemarks("");
       }
       setErrors({});
@@ -86,6 +94,8 @@ export default function DocumentDialog({
         document_name: documentName.trim(),
         document_date: documentDate,
         direction,
+        received_by: receivedBy.trim() || null,
+        released_by: releasedBy.trim() || null,
         remarks: remarks.trim() || null,
       });
       onClose();
@@ -170,6 +180,28 @@ export default function DocumentDialog({
               <SelectItem value="released">Released</SelectItem>
             </SelectContent>
           </Select>
+        </div>
+
+        {/* Received By */}
+        <div className="space-y-2">
+          <Label htmlFor="doc-received-by">Received By</Label>
+          <Input
+            id="doc-received-by"
+            placeholder="Name of person who received"
+            value={receivedBy}
+            onChange={(e) => setReceivedBy(e.target.value)}
+          />
+        </div>
+
+        {/* Released By */}
+        <div className="space-y-2">
+          <Label htmlFor="doc-released-by">Released By</Label>
+          <Input
+            id="doc-released-by"
+            placeholder="Name of person who released"
+            value={releasedBy}
+            onChange={(e) => setReleasedBy(e.target.value)}
+          />
         </div>
 
         {/* Remarks */}

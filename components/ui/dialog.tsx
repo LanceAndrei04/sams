@@ -90,7 +90,7 @@ export function Dialog({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div 
-        className="fixed inset-0 bg-slate-900/18 dark:bg-slate-500/24 backdrop-blur-[2px] transition-opacity animate-fade-in"
+        className="fixed inset-0 bg-slate-900/12 dark:bg-slate-950/40 backdrop-blur-[2px] transition-opacity animate-fade-in"
         onClick={onClose}
       />
 

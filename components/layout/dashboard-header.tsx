@@ -30,13 +30,13 @@ export default function DashboardHeader() {
         <div className={cn(
           "flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium shadow-[inset_2px_2px_6px_rgba(163,173,175,0.15),inset_-2px_-2px_6px_rgba(255,255,255,0.95)]",
           currentSchoolYear.status === "active"
-            ? "bg-[linear-gradient(145deg,rgba(223,242,235,0.96),rgba(205,227,217,0.88))] text-green-800"
+            ? "bg-[linear-gradient(145deg,rgba(223,242,235,0.96),rgba(205,227,217,0.88))] text-emerald-800"
             : "bg-[linear-gradient(145deg,rgba(255,244,221,0.96),rgba(244,225,185,0.88))] text-amber-800"
         )}>
           <div className={cn(
             "w-2 h-2 rounded-full",
             currentSchoolYear.status === "active" 
-              ? "bg-green-500" 
+              ? "bg-emerald-500" 
               : "bg-amber-500"
           )} />
           <span>{currentSchoolYear.label}</span>

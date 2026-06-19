@@ -15,10 +15,10 @@ export default function GradeCard({ gradeName, studentCount, gradeId }: GradeCar
   // Determine color based on grade level
   const getGradeColor = (name: string) => {
     const lower = name.toLowerCase();
-    if (lower.includes("kinder")) return "from-red-400 to-red-500";
-    if (lower.includes("grade 1") || lower.includes("grade 2") || lower.includes("grade 3")) return "from-green-400 to-green-500";
-    if (lower.includes("grade 4") || lower.includes("grade 5") || lower.includes("grade 6")) return "from-blue-400 to-blue-500";
-    return "from-purple-400 to-purple-500";
+    if (lower.includes("kinder")) return "from-red-300 to-red-400";
+    if (lower.includes("grade 1") || lower.includes("grade 2") || lower.includes("grade 3")) return "from-emerald-300 to-emerald-400";
+    if (lower.includes("grade 4") || lower.includes("grade 5") || lower.includes("grade 6")) return "from-blue-300 to-blue-400";
+    return "from-purple-300 to-purple-400";
   };
   
   const colorGradient = getGradeColor(gradeName);

@@ -1,33 +1,33 @@
 @import "tailwindcss";
 
 :root {
-  --background: #e7ecec;
-  --foreground: #273334;
-  --primary: #7ca6a3;
-  --primary-hover: #698e8b;
-  --secondary: #b8c4d8;
-  --muted: #dde3e4;
-  --muted-foreground: #657374;
-  --border: rgba(255, 255, 255, 0.72);
-  --card: #e6ebec;
-  --card-foreground: #283233;
-  --ring: rgba(124, 166, 163, 0.28);
-  --glass-border: rgba(255, 255, 255, 0.86);
+  --background: #f4f6f5;
+  --foreground: #1a2b2c;
+  --primary: #7fb5b0;
+  --primary-hover: #6da39e;
+  --secondary: #c5cfd6;
+  --muted: #e8edec;
+  --muted-foreground: #5c6a6b;
+  --border: rgba(255, 255, 255, 0.64);
+  --card: #eef1f0;
+  --card-foreground: #1e3031;
+  --ring: rgba(127, 181, 176, 0.22);
+  --glass-border: rgba(255, 255, 255, 0.78);
 }
 
 .dark {
-  --background: #a9b1b2;
-  --foreground: #f4f7f6;
-  --primary: #d7e2e1;
-  --primary-hover: #c3d2d0;
-  --secondary: #b8c3cf;
-  --muted: #bac1c2;
-  --muted-foreground: #e3e8e7;
-  --border: rgba(255, 255, 255, 0.14);
-  --card: #b7bfc0;
-  --card-foreground: #f5f8f7;
-  --ring: rgba(215, 226, 225, 0.28);
-  --glass-border: rgba(255, 255, 255, 0.18);
+  --background: #1e2829;
+  --foreground: #eef2f1;
+  --primary: #8fc2bd;
+  --primary-hover: #7db4af;
+  --secondary: #495557;
+  --muted: #2a3637;
+  --muted-foreground: #9aabac;
+  --border: rgba(255, 255, 255, 0.08);
+  --card: #263132;
+  --card-foreground: #eef2f1;
+  --ring: rgba(143, 194, 189, 0.25);
+  --glass-border: rgba(255, 255, 255, 0.1);
 }
 
 @theme inline {
@@ -48,10 +48,11 @@
 body {
   min-height: 100vh;
   background-image:
-    radial-gradient(circle at top left, rgba(255, 255, 255, 0.8), transparent 24%),
-    radial-gradient(circle at right center, rgba(196, 209, 226, 0.45), transparent 22%),
-    radial-gradient(circle at 20% 80%, rgba(230, 212, 218, 0.4), transparent 20%),
-    linear-gradient(145deg, #e5ebeb 0%, #dfe4e7 48%, #e9e5e1 100%);
+    radial-gradient(circle at 15% 10%, rgba(255, 255, 255, 0.92), transparent 30%),
+    radial-gradient(circle at 85% 25%, rgba(210, 225, 230, 0.35), transparent 28%),
+    radial-gradient(circle at 30% 80%, rgba(235, 224, 222, 0.3), transparent 24%),
+    radial-gradient(circle at 70% 75%, rgba(218, 232, 226, 0.25), transparent 22%),
+    linear-gradient(145deg, #eef2f0 0%, #e8edec 50%, #eeeae5 100%);
   background-attachment: fixed;
   color: var(--foreground);
   font-family: var(--font-sans);
@@ -60,10 +61,11 @@ body {
 
 .dark body {
   background-image:
-    radial-gradient(circle at top left, rgba(232, 238, 238, 0.24), transparent 24%),
-    radial-gradient(circle at right center, rgba(182, 194, 204, 0.2), transparent 22%),
-    radial-gradient(circle at 20% 80%, rgba(214, 223, 221, 0.14), transparent 20%),
-    linear-gradient(145deg, #a8b0b1 0%, #b3bbbc 48%, #9da5a6 100%);
+    radial-gradient(circle at 15% 10%, rgba(255, 255, 255, 0.06), transparent 30%),
+    radial-gradient(circle at 85% 25%, rgba(255, 255, 255, 0.04), transparent 28%),
+    radial-gradient(circle at 30% 80%, rgba(255, 255, 255, 0.03), transparent 24%),
+    radial-gradient(circle at 70% 75%, rgba(255, 255, 255, 0.03), transparent 22%),
+    linear-gradient(145deg, #1e2829 0%, #222d2e 50%, #1b2425 100%);
 }
 
 body::before {
@@ -71,7 +73,11 @@ body::before {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.22), transparent 35%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, transparent 40%);
+}
+
+.dark body::before {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 40%);
 }
 
 * {
@@ -79,7 +85,7 @@ body::before {
 }
 
 ::selection {
-  background: rgba(62, 168, 159, 0.26);
+  background: rgba(127, 181, 176, 0.18);
 }
 
 input:focus,

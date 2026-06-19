@@ -76,6 +76,8 @@ export default function DocumentsTab({ studentId }: DocumentsTabProps) {
     document_name: string;
     document_date: string;
     direction: DocumentDirection;
+    received_by?: string | null;
+    released_by?: string | null;
     remarks?: string | null;
   }) => {
     if (editingDocument) {
@@ -152,10 +154,12 @@ export default function DocumentsTab({ studentId }: DocumentsTabProps) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[40%]">Document Name</TableHead>
+              <TableHead className="w-[30%]">Document Name</TableHead>
               <TableHead>Date</TableHead>
-              <TableHead>Received / Released</TableHead>
-              <TableHead className="hidden md:table-cell">Remarks</TableHead>
+              <TableHead>Direction</TableHead>
+              <TableHead className="hidden md:table-cell">Received By</TableHead>
+              <TableHead className="hidden md:table-cell">Released By</TableHead>
+              <TableHead className="hidden md:table-cell max-w-[150px]">Remarks</TableHead>
               <TableHead className="w-14" />
             </TableRow>
           </TableHeader>
@@ -175,7 +179,13 @@ export default function DocumentsTab({ studentId }: DocumentsTabProps) {
                     {directionLabels[doc.direction]}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-muted-foreground hidden md:table-cell max-w-[200px] truncate">
+                <TableCell className="text-muted-foreground hidden md:table-cell">
+                  {doc.received_by || "—"}
+                </TableCell>
+                <TableCell className="text-muted-foreground hidden md:table-cell">
+                  {doc.released_by || "—"}
+                </TableCell>
+                <TableCell className="text-muted-foreground hidden md:table-cell max-w-[150px] truncate">
                   {doc.remarks || "—"}
                 </TableCell>
                 <TableCell>

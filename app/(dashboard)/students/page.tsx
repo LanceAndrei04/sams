@@ -14,14 +14,10 @@ export default function StudentsPage() {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-            <GraduationCap className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-          </div>
+      
           <div>
             <h1 className="text-2xl font-bold text-foreground">Students</h1>
-            <p className="text-muted-foreground">
-              Manage student records, sections, and enrollment
-            </p>
+            <p className="text-sm text-muted-foreground">Manage student records and grade levels</p>
           </div>
         </div>
         <Button asChild>
@@ -37,9 +33,7 @@ export default function StudentsPage() {
         <label className="text-sm font-medium text-foreground">
           Quick Search
         </label>
-        <p className="text-sm text-muted-foreground">
-          Search for any student across all grades in the active school year
-        </p>
+      
         <QuickSearch />
       </div>
 
@@ -48,9 +42,7 @@ export default function StudentsPage() {
         <h2 className="text-lg font-semibold text-foreground">
           Browse by Grade Level
         </h2>
-        <p className="text-sm text-muted-foreground">
-          Click on a grade card to view its student roster
-        </p>
+       
         <GradeCardGrid />
       </div>
 

@@ -56,14 +56,14 @@ export default function InventoryPage() {
 
   // Colour palette for cards (rotating)
   const colours = [
-    "from-blue-400 to-blue-500",
-    "from-green-400 to-green-500",
-    "from-red-400 to-red-500",
-    "from-purple-400 to-purple-500",
-    "from-amber-400 to-amber-500",
-    "from-indigo-400 to-indigo-500",
-    "from-pink-400 to-pink-500",
-    "from-teal-400 to-teal-500",
+    "from-sky-300 to-sky-400",
+    "from-emerald-300 to-emerald-400",
+    "from-rose-300 to-rose-400",
+    "from-violet-300 to-violet-400",
+    "from-amber-300 to-amber-400",
+    "from-indigo-300 to-indigo-400",
+    "from-pink-300 to-pink-400",
+    "from-teal-300 to-teal-400",
   ];
 
   // ── Loading state ──
@@ -96,9 +96,6 @@ export default function InventoryPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-amber-100 dark:bg-amber-900/30 rounded-lg">
-            <Package className="w-6 h-6 text-amber-600 dark:text-amber-400" />
-          </div>
           <div>
             <h1 className="text-2xl font-bold text-foreground">Inventory</h1>
             <p className="text-muted-foreground">
