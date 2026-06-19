@@ -10,7 +10,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="flex min-h-screen w-full">
+    <div className="flex min-h-screen w-full bg-transparent">
       {/* Sidebar Navigation */}
       <AppSidebar />
       
@@ -20,7 +20,7 @@ export default function DashboardLayout({
         <DashboardHeader />
         
         {/* Page Content */}
-        <main className="flex-1 p-6 bg-background">
+        <main className="flex-1 p-6">
           <div className="max-w-7xl mx-auto">
             {children}
           </div>

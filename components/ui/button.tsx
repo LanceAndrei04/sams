@@ -12,15 +12,15 @@ export interface ButtonProps
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = 'default', size = 'default', asChild = false, ...props }, ref) => {
     const Comp = asChild ? Slot : "button";
-    const baseStyles = "inline-flex items-center justify-center whitespace-nowrap rounded-[20px] text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 shadow-[0_18px_40px_-28px_rgba(15,23,42,0.35)]";
+    const baseStyles = "inline-flex items-center justify-center whitespace-nowrap rounded-[20px] text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50";
     
     const variantStyles = {
-      default: "bg-white/92 text-foreground border border-white/80 hover:bg-white",
-      primary: "bg-[rgba(62,168,159,0.95)] text-white shadow-[0_16px_30px_-20px_rgba(62,168,159,0.4)] hover:bg-[rgba(50,142,132,0.95)]",
-      destructive: "bg-[#ff7a88] text-white hover:bg-[#ff5f72]",
-      outline: "border border-white/70 bg-white/40 text-foreground hover:bg-white/70 backdrop-blur-sm",
-      secondary: "bg-[rgba(145,199,192,0.24)] text-[#14564f] hover:bg-[rgba(145,199,192,0.32)]",
-      ghost: "bg-transparent text-foreground hover:bg-white/50",
+      default: "border border-white/75 bg-[linear-gradient(145deg,rgba(255,255,255,0.9),rgba(224,230,231,0.8))] text-foreground shadow-[6px_6px_14px_rgba(163,173,175,0.38),-6px_-6px_14px_rgba(255,255,255,0.8)] hover:shadow-[4px_4px_10px_rgba(163,173,175,0.34),-4px_-4px_10px_rgba(255,255,255,0.86)]",
+      primary: "bg-[linear-gradient(145deg,rgba(124,166,163,0.98),rgba(96,139,136,0.98))] text-white shadow-[10px_10px_18px_rgba(116,142,139,0.3),-8px_-8px_18px_rgba(255,255,255,0.42)] hover:brightness-[0.98]",
+      destructive: "bg-[linear-gradient(145deg,rgba(255,140,155,0.98),rgba(231,103,122,0.98))] text-white shadow-[10px_10px_18px_rgba(184,111,122,0.26),-8px_-8px_18px_rgba(255,255,255,0.4)]",
+      outline: "border border-white/80 bg-[linear-gradient(145deg,rgba(246,248,248,0.9),rgba(227,233,234,0.8))] text-foreground shadow-[6px_6px_14px_rgba(163,173,175,0.26),-6px_-6px_14px_rgba(255,255,255,0.8)]",
+      secondary: "bg-[linear-gradient(145deg,rgba(226,232,244,0.92),rgba(208,218,233,0.82))] text-[#36506b] shadow-[6px_6px_14px_rgba(163,173,175,0.2),-6px_-6px_14px_rgba(255,255,255,0.82)]",
+      ghost: "bg-transparent text-foreground hover:bg-white/40",
       link: "text-primary underline-offset-4 hover:underline",
     };
     

@@ -41,14 +41,14 @@ export default function ThemeToggle() {
   // Prevent layout shift/hydration mismatch during SSR by rendering a placeholder
   if (!mounted) {
     return (
-      <div className="w-10 h-10 rounded-xl bg-muted border border-border animate-pulse" />
+      <div className="size-10 rounded-2xl bg-[linear-gradient(145deg,rgba(255,255,255,0.85),rgba(226,231,233,0.8))] shadow-[6px_6px_14px_rgba(163,173,175,0.18),-6px_-6px_14px_rgba(255,255,255,0.9)] animate-pulse" />
     );
   }
 
   return (
     <button
       onClick={toggleTheme}
-      className="flex items-center justify-center w-10 h-10 rounded-xl bg-card hover:bg-muted text-foreground border border-border cursor-pointer transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-primary/20"
+      className="flex size-10 items-center justify-center rounded-2xl bg-[linear-gradient(145deg,rgba(255,255,255,0.85),rgba(226,231,233,0.8))] text-foreground shadow-[6px_6px_14px_rgba(163,173,175,0.18),-6px_-6px_14px_rgba(255,255,255,0.9)] cursor-pointer transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-primary/20"
       aria-label={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
     >
       {theme === "light" ? (

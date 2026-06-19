@@ -9,10 +9,10 @@ const itemStatusLabels: Record<TeacherItemStatus, string> = {
 };
 
 const itemStatusVariants: Record<TeacherItemStatus, BadgeProps["variant"]> = {
-  own_station: "active",
-  reassigned: "default",
-  borrowed: "transferred",
-  clustered: "inactive",
+  own_station: "own_station",
+  reassigned: "reassigned",
+  borrowed: "borrowed",
+  clustered: "clustered",
 };
 
 export function getTeacherInitials(teacher: Pick<Teacher, "first_name" | "last_name">) {

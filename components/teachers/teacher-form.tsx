@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
@@ -81,6 +81,21 @@ const employmentFields = [
   ["r4a3_account", "R4A-3 Account", "Optional"],
 ] as const;
 
+const selectOptions = {
+  gender: ["Male", "Female"],
+  civil_status: ["Single", "Married", "Widowed", "Separated"],
+  item_status: [
+    ["own_station", "Own Station"],
+    ["reassigned", "Reassigned"],
+    ["borrowed", "Borrowed"],
+    ["clustered", "Clustered"],
+  ],
+  status: [
+    ["active", "Active"],
+    ["inactive", "Inactive"],
+  ],
+} as const;
+
 export default function TeacherForm({ teacher }: { teacher: Teacher }) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -90,7 +105,7 @@ export default function TeacherForm({ teacher }: { teacher: Teacher }) {
     resolver: zodResolver(teacherSchema),
     defaultValues: { ...teacher },
   });
-  const initials = useMemo(() => getTeacherInitials(form.getValues()), [form]);
+  const initials = getTeacherInitials(teacher);
 
   useEffect(() => {
     return () => {
@@ -136,13 +151,13 @@ export default function TeacherForm({ teacher }: { teacher: Teacher }) {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-8">
             <Section title="Personal Info">
-              <SelectField form={form} name="gender" label="Gender" options={["Male", "Female"]} />
-              <SelectField form={form} name="civil_status" label="Civil Status" options={["Single", "Married", "Widowed", "Separated"]} />
+              <SelectField form={form} name="gender" label="Gender" options={selectOptions.gender.map((option) => [option, option] as const)} />
+              <SelectField form={form} name="civil_status" label="Civil Status" options={selectOptions.civil_status.map((option) => [option, option] as const)} />
               <InputField form={form} name="birthday" label="Birthday" type="date" />
               {personalFields.map(([name, label, placeholder]) => <InputField key={name} form={form} name={name} label={label} placeholder={placeholder} />)}
             </Section>
             <Section title="Employment">
-              <SelectField form={form} name="item_status" label="Item Status" options={["own_station", "reassigned", "borrowed", "clustered"]} />
+              <SelectField form={form} name="item_status" label="Item Status" options={selectOptions.item_status} />
               {employmentFields.map(([name, label, placeholder]) => <InputField key={name} form={form} name={name} label={label} placeholder={placeholder} />)}
             </Section>
             <Section title="Photo">
@@ -152,7 +167,7 @@ export default function TeacherForm({ teacher }: { teacher: Teacher }) {
               </div>
             </Section>
             <Section title="Status">
-              <SelectField form={form} name="status" label="Status" options={["active", "inactive"]} />
+              <SelectField form={form} name="status" label="Status" options={selectOptions.status} />
             </Section>
             <div className="flex justify-end gap-3 border-t pt-6">
               <Button type="button" variant="outline" onClick={cancel} disabled={isSubmitting}>Cancel</Button>
@@ -180,14 +195,10 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   return <section className="flex flex-col gap-4"><h2 className="text-lg font-semibold">{title}</h2><div className="grid grid-cols-1 gap-4 md:grid-cols-2">{children}</div></section>;
 }
 
-function InputField({ form, name, label, type = "text", placeholder }: { form: ReturnType<typeof useForm<TeacherFormValues>>; name: keyof TeacherFormValues; label: string; type?: string; placeholder?: string }) {
+function InputField({ form, name, label, type = "text", placeholder }: { form: any; name: any; label: string; type?: string; placeholder?: string }) {
   return <FormField control={form.control} name={name} render={({ field }) => <FormItem><FormLabel>{label}</FormLabel><FormControl><Input type={type} placeholder={placeholder} {...field} value={field.value ?? ""} /></FormControl><FormMessage /></FormItem>} />;
 }
 
-function SelectField({ form, name, label, options }: { form: ReturnType<typeof useForm<TeacherFormValues>>; name: keyof TeacherFormValues; label: string; options: string[] }) {
-  return <FormField control={form.control} name={name} render={({ field }) => <FormItem><FormLabel>{label}</FormLabel><Select value={String(field.value ?? "")} onValueChange={field.onChange}><FormControl><SelectTrigger><SelectValue placeholder={`Select ${label.toLowerCase()}`} /></SelectTrigger></FormControl><SelectContent>{options.map((option) => <SelectItem key={option} value={option}>{labelOption(option)}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>} />;
-}
-
-function labelOption(value: string) {
-  return value.split("_").map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
+function SelectField({ form, name, label, options }: { form: any; name: any; label: string; options: readonly (readonly [string, string])[] }) {
+  return <FormField control={form.control} name={name} render={({ field }) => <FormItem><FormLabel>{label}</FormLabel><Select value={String(field.value ?? "")} onValueChange={field.onChange}><FormControl><SelectTrigger><SelectValue placeholder={`Select ${label.toLowerCase()}`} /></SelectTrigger></FormControl><SelectContent>{options.map(([value, display]) => <SelectItem key={value} value={value}>{display}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>} />;
 }

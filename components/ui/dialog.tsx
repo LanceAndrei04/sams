@@ -90,7 +90,7 @@ export function Dialog({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div 
-        className="fixed inset-0 bg-slate-950/40 dark:bg-slate-950/60 backdrop-blur-xs transition-opacity animate-fade-in"
+        className="fixed inset-0 bg-slate-900/18 dark:bg-slate-500/24 backdrop-blur-[2px] transition-opacity animate-fade-in"
         onClick={onClose}
       />
 
@@ -101,15 +101,15 @@ export function Dialog({
         aria-modal="true"
         aria-labelledby="dialog-title"
         aria-describedby={description ? "dialog-desc" : undefined}
-        className="relative w-full max-w-md bg-white/85 border border-white/65 text-foreground rounded-[24px] shadow-[0_35px_80px_-35px_rgba(15,23,42,0.45)] p-6 z-10 animate-scale-up backdrop-blur-xl focus:outline-none"
+        className="relative z-10 w-full max-w-md rounded-[24px] border border-white/75 bg-[linear-gradient(145deg,rgba(255,255,255,0.96),rgba(228,233,235,0.92))] p-6 text-foreground shadow-[10px_10px_24px_rgba(163,173,175,0.22),-8px_-8px_20px_rgba(255,255,255,0.94)] animate-scale-up focus:outline-none"
         tabIndex={-1}
       >
         {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 p-1.5 hover:bg-white/70 text-muted-foreground hover:text-foreground rounded-full transition-colors cursor-pointer"
-          aria-label="Close dialog"
-        >
+          <button
+            onClick={onClose}
+            className="absolute right-4 top-4 cursor-pointer rounded-full bg-[linear-gradient(145deg,rgba(255,255,255,0.9),rgba(226,231,233,0.8))] p-1.5 text-muted-foreground shadow-[4px_4px_10px_rgba(163,173,175,0.16),-4px_-4px_10px_rgba(255,255,255,0.94)] transition-colors hover:text-foreground"
+            aria-label="Close dialog"
+          >
           <X className="w-4 h-4" />
         </button>
 
@@ -134,7 +134,7 @@ export function Dialog({
               {cancelLabel}
             </Button>
             {onConfirm && (
-              <Button variant="primary" className="bg-red-600 hover:bg-red-700 focus:ring-red-500/20" onClick={onConfirm}>
+              <Button variant="primary" className="focus:ring-red-500/20" onClick={onConfirm}>
                 {confirmLabel}
               </Button>
             )}

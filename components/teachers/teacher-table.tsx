@@ -58,7 +58,17 @@ export default function TeacherTable({ teachers }: { teachers: Teacher[] }) {
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <TableHead key={header.id}>
-                  {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                  {header.isPlaceholder ? null : (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      className="h-auto px-0 py-0 font-medium text-muted-foreground hover:bg-transparent hover:text-foreground"
+                      onClick={header.column.getToggleSortingHandler()}
+                      disabled={!header.column.getCanSort()}
+                    >
+                      {flexRender(header.column.columnDef.header, header.getContext())}
+                    </Button>
+                  )}
                 </TableHead>
               ))}
             </TableRow>
