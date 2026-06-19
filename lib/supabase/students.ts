@@ -41,8 +41,8 @@ export interface Student {
 }
 
 export interface StudentWithRelations extends Student {
-  section: Section;
-  grade: Grade;
+  section?: Section;
+  grade?: Grade;
 }
 
 // Mock data
@@ -146,6 +146,7 @@ export async function getSectionsByGrade(gradeId: string): Promise<Section[]> {
 
 // Get student counts by grade for active school year
 export async function getStudentCountsByGrade(): Promise<Record<string, number>> {
+  console.log("[getStudentCountsByGrade] Calculating student counts...");
   const counts: Record<string, number> = {};
   
   mockGrades.forEach(grade => {
@@ -153,16 +154,21 @@ export async function getStudentCountsByGrade(): Promise<Record<string, number>>
       student.section?.grade_id === grade.id && student.status === 'active'
     );
     counts[grade.name] = gradeStudents.length;
+    console.log(`[getStudentCountsByGrade] Grade ${grade.name}: ${gradeStudents.length} students`);
   });
   
+  console.log("[getStudentCountsByGrade] Final counts:", counts);
   return counts;
 }
 
 // Get students by grade ID
 export async function getStudentsByGrade(gradeId: string): Promise<StudentWithRelations[]> {
-  return mockStudents
+  console.log(`[getStudentsByGrade] Fetching students for grade ID: ${gradeId}`);
+  const students = mockStudents
     .filter(student => student.grade?.id === gradeId)
     .sort((a, b) => a.last_name.localeCompare(b.last_name));
+  console.log(`[getStudentsByGrade] Found ${students.length} students for grade ${gradeId}`);
+  return students;
 }
 
 // Search students across active school year

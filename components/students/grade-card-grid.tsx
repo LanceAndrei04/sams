@@ -1,20 +1,31 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import GradeCard from "./grade-card";
 import { getGradesByGroup } from "@/lib/students/grade-groups";
-
-// Dummy data for grade student counts
-const DUMMY_STUDENT_COUNTS: Record<string, number> = {
-  'Kinder': 45,
-  'Grade 1': 68,
-  'Grade 2': 72,
-  'Grade 3': 81,
-  'Grade 4': 75,
-  'Grade 5': 69,
-  'Grade 6': 63,
-};
+import { getStudentCountsByGrade } from "@/lib/supabase/students";
 
 export default function GradeCardGrid() {
+  const [studentCounts, setStudentCounts] = useState<Record<string, number>>({});
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadStudentCounts() {
+      console.log("[GradeCardGrid] Starting to load student counts...");
+      try {
+        const counts = await getStudentCountsByGrade();
+        console.log("[GradeCardGrid] Student counts loaded:", counts);
+        setStudentCounts(counts);
+      } catch (error) {
+        console.error("[GradeCardGrid] Failed to load student counts:", error);
+      } finally {
+        console.log("[GradeCardGrid] Loading complete, setting isLoading to false");
+        setIsLoading(false);
+      }
+    }
+    loadStudentCounts();
+  }, []);
+
   // Get grades organized by group
   const gradesByGroup = getGradesByGroup();
 
@@ -28,7 +39,7 @@ export default function GradeCardGrid() {
               <GradeCard
                 key={grade}
                 gradeName={grade}
-                studentCount={DUMMY_STUDENT_COUNTS[grade] || 0}
+                studentCount={isLoading ? 0 : (studentCounts[grade] || 0)}
               />
             ))}
           </div>

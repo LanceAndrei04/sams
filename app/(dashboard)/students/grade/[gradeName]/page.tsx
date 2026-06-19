@@ -24,10 +24,12 @@ export default function GradeRosterPage() {
 
   useEffect(() => {
     async function loadData() {
+      console.log("[GradeRosterPage] Starting to load data for grade:", gradeName);
       setIsLoading(true);
       try {
         // Get all grades to find the ID for this grade name
         const grades = await getGradesForActiveYear();
+        console.log("[GradeRosterPage] Available grades:", grades);
         
         // Convert URL param back to grade name
         // gradeName is like "grade-3" or "kinder"
@@ -41,27 +43,32 @@ export default function GradeRosterPage() {
           targetGradeName = targetGradeName.replace("grade", "Grade");
         }
         
+        console.log("[GradeRosterPage] Looking for grade:", targetGradeName);
         const targetGrade = grades.find(g => 
           g.name.toLowerCase() === targetGradeName.toLowerCase()
         );
         
         if (!targetGrade) {
-          console.error("Grade not found:", gradeName, "converted to:", targetGradeName);
+          console.error("[GradeRosterPage] Grade not found:", gradeName, "converted to:", targetGradeName);
           return;
         }
         
+        console.log("[GradeRosterPage] Found target grade:", targetGrade);
         setGradeId(targetGrade.id);
         
         // Get students for this grade
         const gradeStudents = await getStudentsByGrade(targetGrade.id);
+        console.log("[GradeRosterPage] Students loaded:", gradeStudents.length);
         setStudents(gradeStudents);
         
         // Get sections for this grade
         const gradeSections = await getSectionsByGrade(targetGrade.id);
+        console.log("[GradeRosterPage] Sections loaded:", gradeSections);
         setSections(gradeSections);
       } catch (error) {
-        console.error("Error loading grade roster:", error);
+        console.error("[GradeRosterPage] Error loading grade roster:", error);
       } finally {
+        console.log("[GradeRosterPage] Setting isLoading to false");
         setIsLoading(false);
       }
     }
