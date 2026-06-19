@@ -283,7 +283,7 @@ export default function StudentTable({
                   data-state={row.getIsSelected() && "selected"}
                   className="cursor-pointer hover:bg-white/80"
                   onClick={() => {
-                    window.location.href = `/students/${row.original.id}`;
+                    router.push(`/students/${row.original.id}`);
                   }}
                 >
                   {row.getVisibleCells().map((cell) => (

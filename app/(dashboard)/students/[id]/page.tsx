@@ -3,18 +3,21 @@
 
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Edit, GraduationCap, User, Phone, Calendar, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { getStudentById } from "@/lib/supabase/students";
 import { useEffect, useState } from "react";
 import { StudentWithRelations } from "@/lib/supabase/students";
 import { format } from "date-fns";
+import DocumentsTab from "@/components/students/profile-tabs/documents-tab";
 
 export default function StudentProfilePage() {
+  const router = useRouter();
   const params = useParams();
   const studentId = params.id as string;
   
@@ -42,13 +45,14 @@ export default function StudentProfilePage() {
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <Link
-          href="/students"
+        <button
+          type="button"
+          onClick={() => router.back()}
           className="inline-flex items-center text-sm text-primary hover:text-primary/80 transition-colors"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Students
-        </Link>
+          Back
+        </button>
         <div className="animate-pulse space-y-4">
           <div className="h-8 bg-muted rounded w-1/3"></div>
           <div className="h-4 bg-muted rounded w-1/2"></div>
@@ -61,13 +65,14 @@ export default function StudentProfilePage() {
   if (!student) {
     return (
       <div className="space-y-6">
-        <Link
-          href="/students"
+        <button
+          type="button"
+          onClick={() => router.back()}
           className="inline-flex items-center text-sm text-primary hover:text-primary/80 transition-colors"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Students
-        </Link>
+          Back
+        </button>
         <div className="text-center py-12">
           <div className="mx-auto w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
             <User className="w-8 h-8 text-muted-foreground" />
@@ -102,13 +107,14 @@ export default function StudentProfilePage() {
   return (
     <div className="space-y-6">
       {/* Back button */}
-      <Link
-        href="/students"
-        className="inline-flex items-center text-sm text-primary hover:text-primary/80 transition-colors"
-      >
-        <ArrowLeft className="w-4 h-4 mr-2" />
-        Back to Students
-      </Link>
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className="inline-flex items-center text-sm text-primary hover:text-primary/80 transition-colors cursor-pointer"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back
+        </button>
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -131,78 +137,84 @@ export default function StudentProfilePage() {
         </Button>
       </div>
 
-      {/* Profile Cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Basic Information */}
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-            <User className="w-5 h-5" />
-            Basic Information
-          </h3>
-          <div className="space-y-4">
-            <div>
-              <p className="text-sm text-muted-foreground">Full Name</p>
-              <p className="font-medium">{fullName}</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">LRN</p>
-              <p className="font-mono font-medium">{student.lrn}</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Status</p>
-              <Badge className={statusColor}>
-                {student.status.charAt(0).toUpperCase() + student.status.slice(1)}
-              </Badge>
-            </div>
-          </div>
-        </Card>
+      <Tabs defaultValue="overview">
+        <TabsList>
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="documents">Documents</TabsTrigger>
+        </TabsList>
 
-        {/* Enrollment Information */}
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-            <GraduationCap className="w-5 h-5" />
-            Enrollment
-          </h3>
-          <div className="space-y-4">
-            <div>
-              <p className="text-sm text-muted-foreground">Grade</p>
-              <p className="font-medium">{student.section?.grade?.name || "N/A"}</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Section</p>
-              <p className="font-medium">{student.section?.name || "N/A"}</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Enrollment Date</p>
-              <p className="font-medium">
-                {student.created_at ? format(new Date(student.created_at), "MMMM d, yyyy") : "N/A"}
-              </p>
-            </div>
-          </div>
-        </Card>
+        <TabsContent value="overview" className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Basic Information */}
+            <Card className="p-6">
+              <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                <User className="w-5 h-5" />
+                Basic Information
+              </h3>
+              <div className="space-y-4">
+                <div>
+                  <p className="text-sm text-muted-foreground">Full Name</p>
+                  <p className="font-medium">{fullName}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">LRN</p>
+                  <p className="font-mono font-medium">{student.lrn}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Status</p>
+                  <Badge className={statusColor}>
+                    {student.status.charAt(0).toUpperCase() + student.status.slice(1)}
+                  </Badge>
+                </div>
+              </div>
+            </Card>
 
-        {/* Contact Information */}
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-            <Phone className="w-5 h-5" />
-            Contact & Family
-          </h3>
-          <div className="space-y-4">
-            <div>
-              <p className="text-sm text-muted-foreground">Contact Number</p>
-              <p className="font-medium">{student.contact_number || "Not provided"}</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Guardian</p>
-              <p className="font-medium">{student.guardian_name || student.mother_name || student.father_name || "Not provided"}</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Address</p>
-              <p className="font-medium">{student.address || "Not provided"}</p>
-            </div>
+            {/* Enrollment Information */}
+            <Card className="p-6">
+              <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                <GraduationCap className="w-5 h-5" />
+                Enrollment
+              </h3>
+              <div className="space-y-4">
+                <div>
+                  <p className="text-sm text-muted-foreground">Grade</p>
+                  <p className="font-medium">{student.section?.grade?.name || "N/A"}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Section</p>
+                  <p className="font-medium">{student.section?.name || "N/A"}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Enrollment Date</p>
+                  <p className="font-medium">
+                    {student.created_at ? format(new Date(student.created_at), "MMMM d, yyyy") : "N/A"}
+                  </p>
+                </div>
+              </div>
+            </Card>
+
+            {/* Contact Information */}
+            <Card className="p-6">
+              <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                <Phone className="w-5 h-5" />
+                Contact & Family
+              </h3>
+              <div className="space-y-4">
+                <div>
+                  <p className="text-sm text-muted-foreground">Contact Number</p>
+                  <p className="font-medium">{student.contact_number || "Not provided"}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Guardian</p>
+                  <p className="font-medium">{student.guardian_name || student.mother_name || student.father_name || "Not provided"}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Address</p>
+                  <p className="font-medium">{student.address || "Not provided"}</p>
+                </div>
+              </div>
+            </Card>
           </div>
-        </Card>
-      </div>
 
       {/* Additional Information */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -269,6 +281,12 @@ export default function StudentProfilePage() {
           </div>
         </div>
       </div>
+        </TabsContent>
+
+        <TabsContent value="documents">
+          <DocumentsTab studentId={student.id} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
