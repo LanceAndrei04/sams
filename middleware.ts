@@ -1,19 +1,13 @@
-// Middleware for route protection
-// This is a placeholder for testing - in a real app, this would check Supabase auth
+import { updateSession } from "@/lib/supabase/middleware";
+import type { NextRequest } from "next/server";
 
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
-
-export function middleware(request: NextRequest) {
-  // For testing purposes, allow all routes
-  // In a real implementation, this would check for authentication session
-  return NextResponse.next();
+export async function middleware(request: NextRequest) {
+  return await updateSession(request);
 }
 
-// Configure which routes the middleware will run on
 export const config = {
   matcher: [
-    // Protect all dashboard routes
-    '/((?!_next/static|_next/image|favicon.ico|public|api).*)',
+    // Skip static assets, auth callback, and Next.js internals
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
