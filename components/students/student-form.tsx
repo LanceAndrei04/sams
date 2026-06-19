@@ -57,7 +57,7 @@ const studentSchema = z.object({
   last_name: z.string().min(1, "Last name is required"),
   middle_name: z.string().optional(),
   birthday: z.date({
-    required_error: "Birthday is required",
+    error: "Birthday is required",
   }),
   birthplace: z.string().optional(),
   address: z.string().optional(),
@@ -431,10 +431,10 @@ export default function StudentForm({ mode, studentId }: StudentFormProps) {
                             mode="single"
                             selected={field.value}
                             onSelect={field.onChange}
-                            disabled={(date) =>
-                              date > new Date() || date < new Date("1900-01-01")
-                            }
-                            initialFocus
+                           disabled={(date: Date) =>
+  date > new Date() || date < new Date("1900-01-01")
+}
+initialFocus
                           />
                         </PopoverContent>
                       </Popover>
