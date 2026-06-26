@@ -2,8 +2,9 @@
 
 import { usePathname } from "next/navigation";
 import { mainNavItems, currentSchoolYear, headerNavItems } from "@/lib/navigation";
-import { HelpCircle, UserCircle, ChevronDown } from "lucide-react";
+import { HelpCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import UserMenu from "@/components/layout/user-menu";
 
 export default function DashboardHeader() {
   const pathname = usePathname();
@@ -56,25 +57,9 @@ export default function DashboardHeader() {
           <HelpCircle className="w-5 h-5 text-muted-foreground" />
         </button>
         
-        {/* User Profile + Theme Toggle */}
+        {/* User Profile */}
         <div className="flex items-center gap-3 border-l border-white/70 pl-4">
-          <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-full bg-[linear-gradient(145deg,rgba(255,255,255,0.9),rgba(223,228,229,0.86))] shadow-[inset_2px_2px_5px_rgba(163,173,175,0.18),inset_-2px_-2px_5px_rgba(255,255,255,0.96)]">
-              <UserCircle className="w-6 h-6 text-primary" />
-            </div>
-            <div className="hidden md:block">
-              <p className="text-sm font-medium text-foreground">Admin User</p>
-              <p className="text-xs text-muted-foreground">Administrator</p>
-            </div>
-          </div>
-          <button
-            className="rounded-lg bg-[linear-gradient(145deg,rgba(255,255,255,0.85),rgba(226,231,233,0.8))] p-1 shadow-[4px_4px_10px_rgba(163,173,175,0.16),-4px_-4px_10px_rgba(255,255,255,0.9)] transition-all hover:brightness-[0.98]"
-            aria-label="Open user menu"
-          >
-            <ChevronDown className="w-4 h-4 text-muted-foreground" />
-          </button>
-          
-
+          <UserMenu />
         </div>
       </div>
     </header>
