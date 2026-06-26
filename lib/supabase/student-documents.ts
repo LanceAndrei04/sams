@@ -1,5 +1,6 @@
-// Mock data for student documents
-// In production this would use Supabase
+// Student documents data access layer — queries Supabase directly
+
+import { createClient } from "@/lib/supabase/client";
 
 export type DocumentDirection = "received" | "released";
 
@@ -15,97 +16,89 @@ export interface StudentDocument {
   created_at: string;
 }
 
-const mockDocuments: StudentDocument[] = [
-  {
-    id: "1",
-    student_id: "1",
-    document_name: "Report Card (SF9) - S.Y. 2024-2025",
-    document_date: "2025-03-28",
-    direction: "received",
-    received_by: "Maria Santos",
-    released_by: null,
-    remarks: "First semester grades",
-    created_at: "2025-03-28T08:00:00Z",
-  },
-  {
-    id: "2",
-    student_id: "1",
-    document_name: "Good Moral Certificate",
-    document_date: "2025-06-10",
-    direction: "released",
-    received_by: null,
-    released_by: "Juan Cruz",
-    remarks: "For transfer requirements",
-    created_at: "2025-06-10T09:30:00Z",
-  },
-  {
-    id: "3",
-    student_id: "1",
-    document_name: "Form 137 (Permanent Record)",
-    document_date: "2024-06-15",
-    direction: "received",
-    received_by: "Ana Reyes",
-    released_by: null,
-    remarks: null,
-    created_at: "2024-06-15T10:00:00Z",
-  },
-  {
-    id: "4",
-    student_id: "5",
-    document_name: "Birth Certificate (PSA)",
-    document_date: "2024-08-20",
-    direction: "received",
-    received_by: "Pedro Bautista",
-    released_by: null,
-    remarks: "Certified true copy",
-    created_at: "2024-08-20T11:00:00Z",
-  },
-  {
-    id: "5",
-    student_id: "5",
-    document_name: "Transfer Credentials",
-    document_date: "2025-05-12",
-    direction: "released",
-    received_by: null,
-    released_by: "Sofia Garcia",
-    remarks: "Forwarded to Dasmarinas Elementary School",
-    created_at: "2025-05-12T14:00:00Z",
-  },
-];
-
+/** Get all documents for a given student, newest first */
 export async function getDocumentsByStudent(
   studentId: string
 ): Promise<StudentDocument[]> {
-  await new Promise((resolve) => setTimeout(resolve, 100));
-  return mockDocuments
-    .filter((doc) => doc.student_id === studentId)
-    .sort(
-      (a, b) =>
-        new Date(b.document_date).getTime() -
-        new Date(a.document_date).getTime()
-    );
+  const supabase = createClient();
+  const { data } = await supabase
+    .from("student_documents")
+    .select("*")
+    .eq("student_id", studentId)
+    .order("document_date", { ascending: false });
+
+  return (data || []).map(normalizeDoc);
 }
 
+/** Create a new student document record */
 export async function createDocument(
   data: Omit<StudentDocument, "id" | "created_at">
 ): Promise<StudentDocument> {
-  await new Promise((resolve) => setTimeout(resolve, 200));
-  const newDoc: StudentDocument = {
-    id: String(mockDocuments.length + 1),
-    ...data,
-    created_at: new Date().toISOString(),
-  };
-  mockDocuments.push(newDoc);
-  return newDoc;
+  const supabase = createClient();
+
+  const { data: created, error } = await supabase
+    .from("student_documents")
+    .insert({
+      student_id: data.student_id,
+      document_name: data.document_name,
+      document_date: data.document_date,
+      direction: data.direction,
+      received_by: data.received_by || null,
+      released_by: data.released_by || null,
+      remarks: data.remarks || null,
+    })
+    .select("*")
+    .single();
+
+  if (error) throw error;
+  return normalizeDoc(created);
 }
 
+/** Update an existing student document record */
 export async function updateDocument(
   id: string,
   data: Partial<Omit<StudentDocument, "id" | "created_at">>
 ): Promise<StudentDocument | null> {
-  await new Promise((resolve) => setTimeout(resolve, 200));
-  const index = mockDocuments.findIndex((doc) => doc.id === id);
-  if (index === -1) return null;
-  mockDocuments[index] = { ...mockDocuments[index], ...data };
-  return mockDocuments[index];
+  const supabase = createClient();
+
+  const { data: updated, error } = await supabase
+    .from("student_documents")
+    .update({
+      ...(data.document_name !== undefined && {
+        document_name: data.document_name,
+      }),
+      ...(data.document_date !== undefined && {
+        document_date: data.document_date,
+      }),
+      ...(data.direction !== undefined && { direction: data.direction }),
+      ...(data.received_by !== undefined && {
+        received_by: data.received_by || null,
+      }),
+      ...(data.released_by !== undefined && {
+        released_by: data.released_by || null,
+      }),
+      ...(data.remarks !== undefined && { remarks: data.remarks || null }),
+    })
+    .eq("id", id)
+    .select("*")
+    .single();
+
+  if (error) throw error;
+  return normalizeDoc(updated);
+}
+
+// ─── Helpers ──────────────────────────────────────────────────────────────
+
+function normalizeDoc(row: Record<string, unknown>): StudentDocument {
+  return {
+    id: row.id as string,
+    student_id: row.student_id as string,
+    document_name: row.document_name as string,
+    document_date: row.document_date as string,
+    direction: row.direction as DocumentDirection,
+    received_by: (row.received_by as string | null) ?? undefined,
+    released_by: (row.released_by as string | null) ?? undefined,
+    remarks: (row.remarks as string | null) ?? undefined,
+    created_at: row.created_at as string,
+  };
 }

@@ -1,6 +1,9 @@
-// Mock data for student management (using dummy data instead of Supabase)
+// Student data access layer -- queries Supabase directly
 
-// Types based on the data model
+import { createClient } from "@/lib/supabase/client";
+
+// --- Types -------------------------------------------------------------------
+
 export interface SchoolYear {
   id: string;
   label: string;
@@ -26,7 +29,7 @@ export interface Student {
   first_name: string;
   last_name: string;
   middle_name?: string;
-  birthday: string; // ISO date string
+  birthday: string;
   birthplace?: string;
   address?: string;
   father_name?: string;
@@ -34,7 +37,7 @@ export interface Student {
   guardian_name?: string;
   contact_number?: string;
   remarks?: string;
-  status: 'active' | 'inactive' | 'transferred';
+  status: "active" | "inactive" | "transferred";
   created_at: string;
   section?: Section;
   grade?: Grade;
@@ -45,202 +48,224 @@ export interface StudentWithRelations extends Student {
   grade?: Grade;
 }
 
-// Mock data
-const mockGrades: Grade[] = [
-  { id: '1', school_year_id: '1', name: 'Kinder' },
-  { id: '2', school_year_id: '1', name: 'Grade 1' },
-  { id: '3', school_year_id: '1', name: 'Grade 2' },
-  { id: '4', school_year_id: '1', name: 'Grade 3' },
-  { id: '5', school_year_id: '1', name: 'Grade 4' },
-  { id: '6', school_year_id: '1', name: 'Grade 5' },
-  { id: '7', school_year_id: '1', name: 'Grade 6' },
-];
+// --- School Year -------------------------------------------------------------
 
-const mockSections: Section[] = [
-  { id: '1', grade_id: '1', name: 'Morning Class' },
-  { id: '2', grade_id: '1', name: 'Afternoon Class' },
-  { id: '3', grade_id: '2', name: 'Section A' },
-  { id: '4', grade_id: '2', name: 'Section B' },
-  { id: '5', grade_id: '3', name: 'Section A' },
-  { id: '6', grade_id: '3', name: 'Section B' },
-  { id: '7', grade_id: '4', name: 'Section A' },
-  { id: '8', grade_id: '4', name: 'Section B' },
-  { id: '9', grade_id: '5', name: 'Section A' },
-  { id: '10', grade_id: '5', name: 'Section B' },
-  { id: '11', grade_id: '6', name: 'Section A' },
-  { id: '12', grade_id: '6', name: 'Section B' },
-  { id: '13', grade_id: '7', name: 'Section A' },
-  { id: '14', grade_id: '7', name: 'Section B' },
-];
-
-// Generate mock students
-function generateMockStudents(): StudentWithRelations[] {
-  const firstNames = ['Maria', 'Juan', 'Ana', 'Pedro', 'Sofia', 'Miguel', 'Isabella', 'Carlos', 'Elena', 'Jose'];
-  const lastNames = ['Santos', 'Cruz', 'Reyes', 'Bautista', 'Garcia', 'Aquino', 'Dela Cruz', 'Fernandez', 'Gonzales', 'Lopez'];
-  const middleInitials = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
-  
-  const students: StudentWithRelations[] = [];
-  let studentId = 1;
-  
-  mockSections.forEach((section, index) => {
-    const grade = mockGrades.find(g => g.id === section.grade_id);
-    if (!grade) return;
-    
-    // Generate 5-10 students per section
-    const numStudents = 5 + Math.floor(Math.random() * 6);
-    
-    for (let i = 0; i < numStudents; i++) {
-      const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
-      const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
-      const middleName = middleInitials[Math.floor(Math.random() * middleInitials.length)];
-      const lrn = `2024${String(studentId).padStart(8, '0')}`;
-      
-      students.push({
-        id: String(studentId),
-        section_id: section.id,
-        lrn,
-        first_name: firstName,
-        last_name: lastName,
-        middle_name: middleName,
-        birthday: `201${Math.floor(Math.random() * 3)}-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`,
-        birthplace: 'Manila',
-        address: `${Math.floor(Math.random() * 100) + 1} Sample Street, Barangay ${String.fromCharCode(65 + Math.floor(Math.random() * 5))}`,
-        father_name: `Mr. ${lastName}`,
-        mother_name: `Mrs. ${lastName}`,
-        guardian_name: `Mr./Mrs. ${lastName}`,
-        contact_number: `09${Math.floor(Math.random() * 900000000) + 100000000}`,
-        remarks: Math.random() > 0.7 ? 'Special needs assistance required' : '',
-        status: Math.random() > 0.9 ? 'inactive' : 'active',
-        created_at: '2024-01-15T00:00:00Z',
-        section: section,
-        grade: grade,
-      });
-      
-      studentId++;
-    }
-  });
-  
-  return students;
-}
-
-const mockStudents = generateMockStudents();
-
-// Get active school year
+/** Get the currently active school year */
 export async function getActiveSchoolYear(): Promise<SchoolYear | null> {
-  return {
-    id: '1',
-    label: '2024-2025',
-    is_active: true,
-  };
+  const supabase = createClient();
+  const { data } = await supabase
+    .from("school_years")
+    .select("*")
+    .eq("is_active", true)
+    .maybeSingle();
+  return data;
 }
 
-// Get all grades for active school year
+// --- Grades ------------------------------------------------------------------
+
+/** Get all grades for the active school year */
 export async function getGradesForActiveYear(): Promise<Grade[]> {
-  return mockGrades;
+  const supabase = createClient();
+  const activeYear = await getActiveSchoolYear();
+  if (!activeYear) return [];
+  const { data } = await supabase
+    .from("grades")
+    .select("*")
+    .eq("school_year_id", activeYear.id)
+    .order("name");
+  return data || [];
 }
 
-// Get sections for a specific grade
+// --- Sections ----------------------------------------------------------------
+
+/** Get all sections for a given grade */
 export async function getSectionsByGrade(gradeId: string): Promise<Section[]> {
-  return mockSections.filter(section => section.grade_id === gradeId);
+  const supabase = createClient();
+  const { data } = await supabase
+    .from("sections")
+    .select("*")
+    .eq("grade_id", gradeId)
+    .order("name");
+  return data || [];
 }
 
-// Get student counts by grade for active school year
+// --- Student Counts ----------------------------------------------------------
+
+/** Get student counts by grade name for the active school year */
 export async function getStudentCountsByGrade(): Promise<Record<string, number>> {
-  console.log("[getStudentCountsByGrade] Calculating student counts...");
+  const supabase = createClient();
+  const activeYear = await getActiveSchoolYear();
+  if (!activeYear) return {};
+  const { data: grades } = await supabase
+    .from("grades")
+    .select("id, name")
+    .eq("school_year_id", activeYear.id);
+  if (!grades || grades.length === 0) return {};
+  const gradeMap = new Map(grades.map((g) => [g.id, g.name]));
+  const { data: sections } = await supabase
+    .from("sections")
+    .select("id, grade_id")
+    .in("grade_id", Array.from(gradeMap.keys()));
+  if (!sections || sections.length === 0) {
+    const empty: Record<string, number> = {};
+    for (const g of grades) empty[g.name] = 0;
+    return empty;
+  }
+  const sectionIds = sections.map((s) => s.id);
+  const { data: studentCounts } = await supabase
+    .from("students")
+    .select("section_id")
+    .in("section_id", sectionIds)
+    .eq("status", "active");
+  const sectionToGrade = new Map(sections.map((s) => [s.id, s.grade_id]));
   const counts: Record<string, number> = {};
-  
-  mockGrades.forEach(grade => {
-    const gradeStudents = mockStudents.filter(student => 
-      student.section?.grade_id === grade.id && student.status === 'active'
-    );
-    counts[grade.name] = gradeStudents.length;
-    console.log(`[getStudentCountsByGrade] Grade ${grade.name}: ${gradeStudents.length} students`);
-  });
-  
-  console.log("[getStudentCountsByGrade] Final counts:", counts);
+  for (const g of grades) counts[g.name] = 0;
+  for (const student of studentCounts || []) {
+    const gradeId = sectionToGrade.get(student.section_id);
+    const gradeName = gradeId ? gradeMap.get(gradeId) : undefined;
+    if (gradeName) {
+      counts[gradeName] = (counts[gradeName] || 0) + 1;
+    }
+  }
   return counts;
 }
 
-// Get students by grade ID
+// --- Students ----------------------------------------------------------------
+
+/** Get students by grade ID, sorted by last name */
 export async function getStudentsByGrade(gradeId: string): Promise<StudentWithRelations[]> {
-  console.log(`[getStudentsByGrade] Fetching students for grade ID: ${gradeId}`);
-  const students = mockStudents
-    .filter(student => student.grade?.id === gradeId)
-    .sort((a, b) => a.last_name.localeCompare(b.last_name));
-  console.log(`[getStudentsByGrade] Found ${students.length} students for grade ${gradeId}`);
-  return students;
+  const supabase = createClient();
+  const { data } = await supabase
+    .from("students")
+    .select("*, sections!inner(*, grades!inner(*))")
+    .eq("sections.grade_id", gradeId)
+    .order("last_name");
+  return (data || []).map(normalizeStudent);
 }
 
-// Search students across active school year
+/** Search for active students by name or LRN */
 export async function searchStudents(query: string): Promise<StudentWithRelations[]> {
   if (!query.trim()) return [];
-  
-  const searchLower = query.toLowerCase();
-  return mockStudents
-    .filter(student => 
-      student.status === 'active' && (
-        student.lrn.toLowerCase().includes(searchLower) ||
-        student.first_name.toLowerCase().includes(searchLower) ||
-        student.last_name.toLowerCase().includes(searchLower) ||
-        `${student.first_name} ${student.last_name}`.toLowerCase().includes(searchLower)
-      )
-    )
-    .slice(0, 10);
+  const supabase = createClient();
+  const escaped = query.trim().replace(/[%_]/g, "\\$&");
+  const pattern = "%" + escaped + "%";
+  const { data } = await supabase
+    .from("students")
+    .select("*, sections(*, grades(*))")
+    .eq("status", "active")
+    .or("lrn.ilike." + pattern + ",first_name.ilike." + pattern + ",last_name.ilike." + pattern)
+    .order("last_name")
+    .limit(10);
+  return (data || []).map(normalizeStudent);
 }
 
-// Get student by ID
+/** Get a single student by ID with full relations */
 export async function getStudentById(id: string): Promise<StudentWithRelations | null> {
-  return mockStudents.find(student => student.id === id) || null;
+  const supabase = createClient();
+  const { data } = await supabase
+    .from("students")
+    .select("*, sections(*, grades(*))")
+    .eq("id", id)
+    .maybeSingle();
+  return data ? normalizeStudent(data) : null;
 }
 
-// Check if LRN is unique
+/** Check if an LRN is unique (optionally exclude a student ID for edits) */
 export async function checkLRNUnique(lrn: string, excludeId?: string): Promise<boolean> {
-  const existingStudent = mockStudents.find(student => 
-    student.lrn === lrn && (!excludeId || student.id !== excludeId)
-  );
-  return !existingStudent;
+  const supabase = createClient();
+  let query = supabase
+    .from("students")
+    .select("id", { count: "exact", head: true })
+    .eq("lrn", lrn);
+  if (excludeId) {
+    query = query.neq("id", excludeId);
+  }
+  const { count } = await query;
+  return count === 0;
 }
 
-// Create new student (mock - just logs to console)
-export async function createStudent(studentData: Omit<Student, 'id' | 'created_at'>): Promise<Student | null> {
-  console.log('Creating student:', studentData);
-  
-  // In a real app, this would return the created student
-  // For mock purposes, return a mock response
-  const newId = String(mockStudents.length + 1);
-  const grade = mockGrades.find(g => {
-    const section = mockSections.find(s => s.id === studentData.section_id);
-    return section?.grade_id === g.id;
-  });
-  
-  const section = mockSections.find(s => s.id === studentData.section_id);
-  
-  const newStudent: StudentWithRelations = {
-    id: newId,
-    ...studentData,
-    created_at: new Date().toISOString(),
-    section: section!,
-    grade: grade!,
-  };
-  
-  // Add to mock data (in memory only)
-  mockStudents.push(newStudent);
-  
-  return newStudent;
+/** Create a new student record */
+export async function createStudent(studentData: Omit<Student, "id" | "created_at">): Promise<Student | null> {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("students")
+    .insert({
+      section_id: studentData.section_id,
+      lrn: studentData.lrn,
+      first_name: studentData.first_name,
+      last_name: studentData.last_name,
+      middle_name: studentData.middle_name || null,
+      birthday: studentData.birthday,
+      birthplace: studentData.birthplace || null,
+      address: studentData.address || null,
+      father_name: studentData.father_name || null,
+      mother_name: studentData.mother_name || null,
+      guardian_name: studentData.guardian_name || null,
+      contact_number: studentData.contact_number || null,
+      remarks: studentData.remarks || null,
+      status: studentData.status,
+    })
+    .select("*, sections(*, grades(*))")
+    .single();
+  if (error) throw error;
+  return data ? normalizeStudent(data) : null;
 }
 
-// Update student (mock - just logs to console)
+/** Update an existing student record */
 export async function updateStudent(id: string, studentData: Partial<Student>): Promise<Student | null> {
-  console.log('Updating student:', id, studentData);
-  
-  const index = mockStudents.findIndex(student => student.id === id);
-  if (index === -1) return null;
-  
-  // Update the student
-  mockStudents[index] = {
-    ...mockStudents[index],
-    ...studentData,
+  const supabase = createClient();
+  const payload: Record<string, unknown> = {};
+  if (studentData.section_id !== undefined) payload.section_id = studentData.section_id;
+  if (studentData.lrn !== undefined) payload.lrn = studentData.lrn;
+  if (studentData.first_name !== undefined) payload.first_name = studentData.first_name;
+  if (studentData.last_name !== undefined) payload.last_name = studentData.last_name;
+  if (studentData.middle_name !== undefined) payload.middle_name = studentData.middle_name || null;
+  if (studentData.birthday !== undefined) payload.birthday = studentData.birthday;
+  if (studentData.birthplace !== undefined) payload.birthplace = studentData.birthplace || null;
+  if (studentData.address !== undefined) payload.address = studentData.address || null;
+  if (studentData.father_name !== undefined) payload.father_name = studentData.father_name || null;
+  if (studentData.mother_name !== undefined) payload.mother_name = studentData.mother_name || null;
+  if (studentData.guardian_name !== undefined) payload.guardian_name = studentData.guardian_name || null;
+  if (studentData.contact_number !== undefined) payload.contact_number = studentData.contact_number || null;
+  if (studentData.remarks !== undefined) payload.remarks = studentData.remarks || null;
+  if (studentData.status !== undefined) payload.status = studentData.status;
+  const { data, error } = await supabase
+    .from("students")
+    .update(payload)
+    .eq("id", id)
+    .select("*, sections(*, grades(*))")
+    .single();
+  if (error) throw error;
+  return data ? normalizeStudent(data) : null;
+}
+
+// --- Helpers -----------------------------------------------------------------
+
+function normalizeStudent(row: Record<string, unknown>): StudentWithRelations {
+  const section = row.sections as Record<string, unknown> | null | undefined;
+  const grade = section?.grades as Record<string, unknown> | null | undefined;
+  return {
+    id: row.id as string,
+    section_id: row.section_id as string,
+    lrn: row.lrn as string,
+    first_name: row.first_name as string,
+    last_name: row.last_name as string,
+    middle_name: (row.middle_name as string | null) ?? undefined,
+    birthday: row.birthday as string,
+    birthplace: (row.birthplace as string | null) ?? undefined,
+    address: (row.address as string | null) ?? undefined,
+    father_name: (row.father_name as string | null) ?? undefined,
+    mother_name: (row.mother_name as string | null) ?? undefined,
+    guardian_name: (row.guardian_name as string | null) ?? undefined,
+    contact_number: (row.contact_number as string | null) ?? undefined,
+    remarks: (row.remarks as string | null) ?? undefined,
+    status: row.status as Student["status"],
+    created_at: row.created_at as string,
+    section: section
+      ? { id: section.id as string, grade_id: section.grade_id as string, name: section.name as string }
+      : undefined,
+    grade: grade
+      ? { id: grade.id as string, school_year_id: grade.school_year_id as string, name: grade.name as string }
+      : undefined,
   };
-  
-  return mockStudents[index];
 }
